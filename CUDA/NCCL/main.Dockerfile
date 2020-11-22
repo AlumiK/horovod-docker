@@ -1,4 +1,4 @@
-FROM alumik/horovod-prereq:gpu-nccl
+FROM alumik/horovod-prereq:cuda-nccl
 
 # Install Horovod, temporarily using CUDA stubs
 RUN cd ~/horovod && \
