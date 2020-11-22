@@ -84,7 +84,7 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
 RUN cp -r ~/horovod/examples ~/examples
 
 # Set up SSH files
-COPY ../../.ssh /root/.ssh
+COPY ./.ssh /root/.ssh
 RUN chmod 700 /root/.ssh && \
     chmod 600 /root/.ssh/id_rsa /root/.ssh/authorized_keys
 
