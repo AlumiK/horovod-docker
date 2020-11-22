@@ -48,13 +48,23 @@ RUN PYTAGS=$(python -c "from packaging import tags; tag = list(tags.sys_tags())[
         https://download.pytorch.org/whl/cu101/torchvision-${TORCHVISION_VERSION}%2Bcu101-${PYTAGS}-linux_x86_64.whl
 RUN pip install mxnet-cu101==${MXNET_VERSION}
 
+# Install UCX
+RUN mkdir /tmp/ucx && \
+    cd /tmp/ucx && \
+    wget https://github.com/openucx/ucx/releases/download/v1.9.0/ucx-1.9.0.tar.gz && \
+    tar -xvf ucx-1.9.0.tar.gz && \
+    cd ucx-1.9.0 && \
+    ./contrib/configure-release --prefix=/usr/local/ucx-cuda --with-cuda=/usr/local/cuda && \
+    make -j $(nproc) install && \
+    rm -rf /tmp/ucx
+
 # Install Open MPI
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
-    wget https://www.open-mpi.org/software/ompi/v4.0/downloads/openmpi-4.0.0.tar.gz && \
-    tar zxf openmpi-4.0.0.tar.gz && \
-    cd openmpi-4.0.0 && \
-    ./configure --enable-orterun-prefix-by-default && \
+    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.5.tar.gz && \
+    tar -xvf openmpi-4.0.5.tar.gz && \
+    cd openmpi-4.0.5 && \
+    ./configure --enable-orterun-prefix-by-default --with-cuda=/usr/local/cuda --with-ucx=/usr/local/ucx-cuda && \
     make -j $(nproc) all && \
     make install && \
     ldconfig && \
