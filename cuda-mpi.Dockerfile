@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-
         python${PYTHON_VERSION}-distutils \
         librdmacm1 \
         libibverbs1 \
-        ibverbs-providers
+        ibverbs-providers \
+        libnuma-dev
 
 RUN ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python
 
