@@ -44,3 +44,37 @@ Update the apt package index, and install the latest version of Docker Engine an
 $ sudo apt update
 $ sudo apt install docker-ce docker-ce-cli containerd.io
 ```
+
+## Build Images
+
+```sh
+$ docker build -f cuda-mpi.Dockerfile -t alumik/horovod:cuda-mpi .
+```
+
+## Create Containers
+
+Create docker network:
+
+```sh
+$ docker network create horovod --subnet 172.21.0.0/24
+```
+
+Create containers:
+
+```sh
+$ docker run -it --network=horovod --runtime=nvidia --shm-size=1g --name node-1 --privileged --ip 172.21.0.2 alumik/horovod:cuda-mpi
+```
+
+## Run Example Scripts 
+
+Master node:
+
+```sh
+$ horovodrun -np 8 -H node-1:2,node-2:2,node-3:2,node-4:2 -p 12345 python tensorflow2_keras_mnist.py
+```
+
+Slave nodes:
+
+```
+$ sleep infinity
+```
