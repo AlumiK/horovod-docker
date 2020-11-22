@@ -61,9 +61,28 @@ $ docker network create horovod --subnet 172.21.0.0/24
 
 Create containers:
 
-```sh
-$ docker run -it --network=horovod --runtime=nvidia --shm-size=1g --name node-1 --privileged --ip 172.21.0.2 alumik/horovod:cuda-mpi
-```
+- With CUDA:
+
+    ```sh
+    $ docker run -it --network=horovod \
+                     --runtime=nvidia \
+                     --shm-size=1g \
+                     --name node-1 \
+                     --privileged \
+                     --ip 172.21.0.2 \
+                     alumik/horovod:cuda-mpi
+    ```
+
+- Without CUDA:
+
+    ```sh
+    $ docker run -it --network=horovod \
+                     --shm-size=1g \
+                     --name node-1 \
+                     --privileged \
+                     --ip 172.21.0.2 \
+                     alumik/horovod:cpu
+    ```
 
 ## Run Example Scripts 
 
