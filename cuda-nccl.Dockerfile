@@ -81,7 +81,7 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
 # Copy examples
-RUN cp -r ~/horovod/examples ~/examples
+RUN cp -r ~/horovod/examples /
 
 # Set up SSH files
 COPY ./.ssh /root/.ssh
