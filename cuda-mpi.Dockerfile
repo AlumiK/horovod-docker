@@ -4,7 +4,6 @@ FROM nvidia/cuda:10.1-cudnn7-devel
 ENV TENSORFLOW_VERSION=2.3.0
 ENV PYTORCH_VERSION=1.6.0
 ENV TORCHVISION_VERSION=0.7.0
-ENV NCCL_VERSION=2.7.8-1+cuda10.1
 ENV MXNET_VERSION=1.6.0.post0
 
 # Python 3.7 is supported by Ubuntu Bionic out of the box
@@ -23,8 +22,6 @@ RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-
         vim \
         wget \
         ca-certificates \
-        libnccl2=${NCCL_VERSION} \
-        libnccl-dev=${NCCL_VERSION} \
         libjpeg-dev \
         libpng-dev \
         python${PYTHON_VERSION} \
@@ -63,8 +60,13 @@ RUN mkdir /tmp/openmpi && \
     ldconfig && \
     rm -rf /tmp/openmpi
 
-# Clone Horovod
+# Install Horovod, temporarily using CUDA stubs
 RUN git clone https://github.com/AlumiK/horovod.git --recursive ~/horovod
+RUN cd ~/horovod && \
+    ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs && \
+    HOROVOD_GPU_ALLREDUCE=MPI HOROVOD_GPU_OPERATIONS=MPI HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
+        pip install --no-cache-dir -e . && \
+    ldconfig
 
 # Install OpenSSH for MPI to communicate between containers
 RUN apt-get install -y --no-install-recommends openssh-client openssh-server && \
@@ -82,3 +84,7 @@ RUN cp -r ~/horovod/examples ~/examples
 COPY ../../.ssh /root/.ssh
 RUN chmod 700 /root/.ssh && \
     chmod 600 /root/.ssh/id_rsa /root/.ssh/authorized_keys
+
+WORKDIR "/examples"
+
+ENTRYPOINT bash -c "service ssh start; /usr/sbin/sshd -p 12345; /bin/bash"
