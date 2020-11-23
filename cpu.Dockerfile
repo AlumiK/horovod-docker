@@ -59,7 +59,7 @@ RUN mkdir /tmp/openmpi && \
     rm -rf /tmp/openmpi
 
 # Install Horovod
-RUN git clone https://github.com/AlumiK/horovod.git --recursive ~/horovod
+RUN git clone https://github.com/horovod/horovod.git --recursive ~/horovod
 RUN cd ~/horovod && \
     MAKEFLAGS="-j1" HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
         pip install --no-cache-dir -e .
