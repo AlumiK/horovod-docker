@@ -45,6 +45,14 @@ $ sudo apt update
 $ sudo apt install docker-ce docker-ce-cli containerd.io
 ```
 
+## Install NVIDIA Container Toolkit for Docker
+
+The NVIDIA Container Toolkit for Docker is required to run CUDA images.
+
+```sh
+$ sudo apt install nvidia-docker2
+```
+
 ## Build Images
 
 ```sh
@@ -53,7 +61,7 @@ $ docker build -f cuda-mpi.Dockerfile -t alumik/horovod:cuda-mpi .
 
 ## Create Containers
 
-Create docker network:
+Create Docker network:
 
 ```sh
 $ docker network create horovod --subnet 172.21.0.0/24
