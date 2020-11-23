@@ -1,14 +1,16 @@
 # TensorFlow version is tightly coupled to CUDA and cuDNN so it should be selected carefully
 FROM nvidia/cuda:10.1-cudnn7-devel
 
-ENV TENSORFLOW_VERSION=2.3.0
-ENV PYTORCH_VERSION=1.6.0
-ENV TORCHVISION_VERSION=0.7.0
+ENV TENSORFLOW_VERSION=2.3.1
+ENV PYTORCH_VERSION=1.7.0
+ENV TORCHVISION_VERSION=0.8.1
 ENV NCCL_VERSION=2.7.8-1+cuda10.1
-ENV MXNET_VERSION=1.6.0.post0
+ENV MXNET_VERSION=1.7.0
 
-# Python 3.7 is supported by Ubuntu Bionic out of the box
-ARG python=3.7
+ENV OPENMPI_VERSION=4.0.5
+
+# Python 3.8 is supported by Ubuntu Bionic out of the box
+ARG python=3.8
 ENV PYTHON_VERSION=${python}
 
 # Set default shell to /bin/bash
@@ -54,9 +56,9 @@ RUN pip install mxnet-cu101==${MXNET_VERSION}
 # Install Open MPI
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
-    wget https://www.open-mpi.org/software/ompi/v4.0/downloads/openmpi-4.0.0.tar.gz && \
-    tar zxf openmpi-4.0.0.tar.gz && \
-    cd openmpi-4.0.0 && \
+    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-${OPENMPI_VERSION}.tar.gz && \
+    tar zxf openmpi-${OPENMPI_VERSION}.tar.gz && \
+    cd openmpi-${OPENMPI_VERSION} && \
     ./configure --enable-orterun-prefix-by-default && \
     make -j $(nproc) all && \
     make install && \

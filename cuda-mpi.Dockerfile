@@ -1,13 +1,16 @@
 # TensorFlow version is tightly coupled to CUDA and cuDNN so it should be selected carefully
 FROM nvidia/cuda:10.1-cudnn7-devel
 
-ENV TENSORFLOW_VERSION=2.3.0
-ENV PYTORCH_VERSION=1.6.0
-ENV TORCHVISION_VERSION=0.7.0
-ENV MXNET_VERSION=1.6.0.post0
+ENV TENSORFLOW_VERSION=2.3.1
+ENV PYTORCH_VERSION=1.7.0
+ENV TORCHVISION_VERSION=0.8.1
+ENV MXNET_VERSION=1.7.0
 
-# Python 3.7 is supported by Ubuntu Bionic out of the box
-ARG python=3.7
+ENV OPENMPI_VERSION=4.0.5
+ENV OPENUCX_VERSION=1.9.0
+
+# Python 3.8 is supported by Ubuntu Bionic out of the box
+ARG python=3.8
 ENV PYTHON_VERSION=${python}
 
 # Set default shell to /bin/bash
@@ -52,9 +55,9 @@ RUN pip install mxnet-cu101==${MXNET_VERSION}
 # Install UCX
 RUN mkdir /tmp/ucx && \
     cd /tmp/ucx && \
-    wget https://github.com/openucx/ucx/releases/download/v1.9.0/ucx-1.9.0.tar.gz && \
-    tar -xvf ucx-1.9.0.tar.gz && \
-    cd ucx-1.9.0 && \
+    wget https://github.com/openucx/ucx/releases/download/v${OPENUCX_VERSION}/ucx-${OPENUCX_VERSION}.tar.gz && \
+    tar zxf ucx-${OPENUCX_VERSION}.tar.gz && \
+    cd ucx-${OPENUCX_VERSION} && \
     ./contrib/configure-release --prefix=/usr/local/ucx-cuda --with-cuda=/usr/local/cuda && \
     make -j $(nproc) install && \
     rm -rf /tmp/ucx
@@ -62,9 +65,9 @@ RUN mkdir /tmp/ucx && \
 # Install Open MPI
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
-    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.5.tar.gz && \
-    tar -xvf openmpi-4.0.5.tar.gz && \
-    cd openmpi-4.0.5 && \
+    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-${OPENMPI_VERSION}.tar.gz && \
+    tar zxf openmpi-${OPENMPI_VERSION}.tar.gz && \
+    cd openmpi-${OPENMPI_VERSION} && \
     ./configure --enable-orterun-prefix-by-default --with-cuda=/usr/local/cuda --with-ucx=/usr/local/ucx-cuda && \
     make -j $(nproc) all && \
     make install && \
