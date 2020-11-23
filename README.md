@@ -45,15 +45,32 @@ sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io
 ```
 
-## Install NVIDIA Container Toolkit for Docker
+## Install NVIDIA Container Toolkit
 
 The NVIDIA Container Toolkit for Docker is required to run CUDA images.
 
+Setup the stable repository and the GPG key:
+
 ```
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
+    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - && \
+    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+```
+
+Install the nvidia-docker2 package (and dependencies) after updating the package listing:
+
+```
+sudo apt update
 sudo apt install nvidia-docker2
 ```
 
-## Build & RUN
+Restart the Docker daemon to complete the installation after setting the default runtime:
+
+```
+sudo systemctl restart docker
+```
+
+## Build & Run
 
 ### Build Images
 
@@ -76,40 +93,38 @@ Create containers:
 - With CUDA:
 
     ```
-    docker run -it --network=<network name> \
-                   --runtime=nvidia \
-                   --shm-size=1g \
-                   --name <node name> \
-                   --privileged \
-                   --ip <ip address> \
-                   <image tag>
+    docker run -itd --network=<network name> --runtime=nvidia --shm-size=1g \
+        --name <node name> --privileged --ip <ip address> <image tag>
     ```
 
 - Without CUDA:
 
     ```
-    docker run -it --network=<network name> \
-                   --shm-size=1g \
-                   --name <node name> \
-                   --privileged \
-                   --ip <ip address> \
-                   <image tag>
+    docker run -itd --network=<network name> --shm-size=1g \
+        --name <node name> --privileged --ip <ip address> <image tag>
     ```
 
 ### Run Example Scripts 
 
-Master node:
-
 To run on 4 machines with 2 GPUs each:
 
 ```
-$ horovodrun -np 8 -H node-1:2,node-2:2,node-3:2,node-4:2 -p 12345 python train.py
+horovodrun -np 8 -H node-1:2,node-2:2,node-3:2,node-4:2 -p 12345 python train.py
 ```
 
-`node-1`, `node-2`... are the node names specified in the previous step.
-
-Slave nodes:
+Or use a host file:
 
 ```
-$ sleep infinity
+horovodrun -np 8 -hostfile myhost -p 12345 python train.py
 ```
+
+```sh
+$ cat myhost
+
+node-1 slot=2
+node-2 slot=2
+node-3 slot=2
+node-4 slot=2
+```
+
+`node-1`, `node-2`, `node-3` and `node-4` are the node names specified in the previous step.
