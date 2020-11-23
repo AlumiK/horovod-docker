@@ -1,5 +1,5 @@
 #!/bin/bash
 
 for i in {1..16}
-    echo "node-$i slot=2" >> hostfile
+    do echo "node-$i slot=2" >> hostfile
 done
