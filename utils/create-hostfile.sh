@@ -1,7 +1,5 @@
 #!/bin/bash
 
-NUM_CONTAINERS=16
-
-for i in $(seq 1 $END)
+for i in {1..16}
     echo "node-$i slot=2" >> hostfile
 done
