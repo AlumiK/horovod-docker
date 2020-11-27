@@ -77,7 +77,8 @@ sudo systemctl restart docker
 `type` can be `cpu`, `cuda-mpi` or `cuda-nccl`.
 
 ```
-docker build -f <type>.Dockerfile -t <image tag> .
+docker build -f deps.<type>.Dockerfile -t horovod-deps:<type> .
+docker build -f main.<type>.Dockerfile -t horovod:<type> .
 ```
 
 ### Create Containers
@@ -94,14 +95,14 @@ Create containers:
 
     ```
     docker run -itd --network=<network name> --runtime=nvidia --shm-size=1g \
-        --name <node name> --privileged --ip <ip address> <image tag>
+        --name <node name> --privileged --ip <ip address> horovod:<type>
     ```
 
 - Without CUDA:
 
     ```
     docker run -itd --network=<network name> --shm-size=1g \
-        --name <node name> --privileged --ip <ip address> <image tag>
+        --name <node name> --privileged --ip <ip address> horovod:<type>
     ```
 
 ### Run Example Scripts 
