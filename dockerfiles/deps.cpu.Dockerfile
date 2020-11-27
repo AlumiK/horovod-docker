@@ -58,12 +58,6 @@ RUN mkdir /tmp/openmpi && \
     ldconfig && \
     rm -rf /tmp/openmpi
 
-# Install Horovod
-RUN git clone https://github.com/horovod/horovod.git --recursive ~/horovod
-RUN cd ~/horovod && \
-    MAKEFLAGS="-j1" HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
-        pip install --no-cache-dir -e .
-
 # Install OpenSSH for MPI to communicate between containers
 RUN apt-get install -y --no-install-recommends openssh-client openssh-server && \
     mkdir -p /var/run/sshd
@@ -73,14 +67,7 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
-# Copy examples
-RUN cp -r ~/horovod/examples /
-
 # Set up SSH files
 COPY ./.ssh /root/.ssh
 RUN chmod 700 /root/.ssh && \
     chmod 600 /root/.ssh/id_rsa /root/.ssh/authorized_keys
-
-WORKDIR "/examples"
-
-ENTRYPOINT bash -c "service ssh start; /usr/sbin/sshd -p 12345; /bin/bash"
