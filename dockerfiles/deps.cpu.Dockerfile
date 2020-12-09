@@ -1,9 +1,9 @@
 FROM ubuntu:18.04
 
 ENV TENSORFLOW_VERSION=2.3.1
-ENV PYTORCH_VERSION=1.7.0
-ENV TORCHVISION_VERSION=0.8.1
-ENV MXNET_VERSION=1.6.0.post0
+ENV PYTORCH_VERSION=1.7.0+cpu
+ENV TORCHVISION_VERSION=0.8.1+cpu
+ENV MXNET_VERSION=1.5.0
 
 ENV OPENMPI_VERSION=4.0.5
 
@@ -17,10 +17,9 @@ SHELL ["/bin/bash", "-cu"]
 RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
         build-essential \
         cmake \
-        g++-4.8 \
         git \
         curl \
-        vim \
+        nano \
         wget \
         ca-certificates \
         libjpeg-dev \
@@ -43,7 +42,8 @@ RUN pip install future typing
 RUN pip install tensorflow-cpu==${TENSORFLOW_VERSION} \
                 keras \
                 h5py
-RUN pip install torch==${PYTORCH_VERSION} torchvision==${TORCHVISION_VERSION}
+RUN pip install torch==${PYTORCH_VERSION} torchvision==${TORCHVISION_VERSION} \
+        -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install mxnet==${MXNET_VERSION}
 
 # Install Open MPI

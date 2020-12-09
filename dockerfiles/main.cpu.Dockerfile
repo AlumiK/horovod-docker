@@ -1,14 +1,14 @@
 FROM horovod-deps:cpu
 
 # Install Horovod
-RUN git clone https://github.com/horovod/horovod.git --recursive ~/horovod
+RUN git clone http://10.10.1.209/AlumiK/horovod.git --recursive ~/horovod
 RUN cd ~/horovod && \
-    MAKEFLAGS="-j1" HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
+    HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
         pip install --no-cache-dir -e .
 
 # Copy examples
-RUN cp -r ~/horovod/examples /
+RUN cp -r ~/horovod/examples ~/examples
 
-WORKDIR "/examples"
+WORKDIR "/root/examples"
 
 ENTRYPOINT bash -c "service ssh start; /usr/sbin/sshd -p 12345; /bin/bash"

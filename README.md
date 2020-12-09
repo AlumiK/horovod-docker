@@ -72,60 +72,44 @@ sudo systemctl restart docker
 
 ## Build & Run
 
-### Build Images
+### Create containers for development
 
-`type` can be `cpu`, `cuda-mpi` or `cuda-nccl`.
-
-```
-docker build -f deps.<type>.Dockerfile -t horovod-deps:<type> .
-docker build -f main.<type>.Dockerfile -t horovod:<type> .
-```
-
-### Create Containers
-
-Create Docker network:
+To build dependency images:
 
 ```
-docker network create <network name> --subnet <subnet in CIDR format>
+./utils/build-deps.sh <tag>
 ```
 
-Create containers:
-
-- With CUDA:
-
-    ```
-    docker run -itd --network=<network name> --runtime=nvidia --shm-size=1g \
-        --name <node name> --privileged --ip <ip address> horovod:<type>
-    ```
-
-- Without CUDA:
-
-    ```
-    docker run -itd --network=<network name> --shm-size=1g \
-        --name <node name> --privileged --ip <ip address> horovod:<type>
-    ```
-
-### Run Example Scripts 
-
-To run on 4 machines with 2 GPUs each:
+To build main images and containers:
 
 ```
-horovodrun -np 8 -H node-1:2,node-2:2,node-3:2,node-4:2 -p 12345 python train.py
+./utils/create-containers.sh <num_nodes> <tag> <horovod_docker_path> <subnet>
 ```
 
-Or use a host file:
+- `tag` can be `cpu`, `cuda-mpi` or `cuda-nccl`.
+- `horovod_docker_path` is your local directory of horovod-docker, e.g., `~/repos/horovod-docker`.
+- `subnet` is the ip address of the Horovod subnet in CIDR format, defaults to `172.21.0.0/24`.
+
+### Run python scripts
+
+To create a hostfile inside the master node:
 
 ```
-horovodrun -np 8 -hostfile myhost -p 12345 python train.py
+~/horovod-docker/utils/create-hostfile.sh <num_nodes> <slots_per_node>
 ```
 
-```sh
-$ cat myhost
+To run python scripts:
 
-node-1 slot=2
-node-2 slot=2
-node-3 slot=2
-node-4 slot=2
+```
+horovodrun -np <num_processes> -hostfile <hostfile> -p 12345 python train.py
 ```
 
-`node-1`, `node-2`, `node-3` and `node-4` are the node names specified in the previous step.
+`hostfile` is the path to the hostfile just created.
+
+### Destroy containers
+
+```
+./utils/destroy-containers.sh <num_nodes>
+```
+
+You should destroy and recreate containers every time you want any changes in the Horovod source code to take effect.

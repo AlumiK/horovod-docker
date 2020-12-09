@@ -1,7 +1,7 @@
 FROM horovod-deps:cuda-mpi
 
 # Install Horovod, temporarily using CUDA stubs
-RUN git clone https://github.com/horovod/horovod.git --recursive ~/horovod
+RUN git clone http://10.10.1.209/AlumiK/horovod.git --recursive ~/horovod
 RUN cd ~/horovod && \
     ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs && \
     HOROVOD_GPU_OPERATIONS=MPI HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITH_PYTORCH=1 HOROVOD_WITH_MXNET=1 \
@@ -9,8 +9,8 @@ RUN cd ~/horovod && \
     ldconfig
 
 # Copy examples
-RUN cp -r ~/horovod/examples /
+RUN cp -r ~/horovod/examples ~/examples
 
-WORKDIR "/examples"
+WORKDIR "/root/examples"
 
 ENTRYPOINT bash -c "service ssh start; /usr/sbin/sshd -p 12345; /bin/bash"

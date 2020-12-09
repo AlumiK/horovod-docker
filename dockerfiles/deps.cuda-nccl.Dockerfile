@@ -19,10 +19,9 @@ SHELL ["/bin/bash", "-cu"]
 RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
         build-essential \
         cmake \
-        g++-4.8 \
         git \
         curl \
-        vim \
+        nano \
         wget \
         ca-certificates \
         libnccl2=${NCCL_VERSION} \
