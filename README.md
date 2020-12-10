@@ -77,13 +77,13 @@ sudo systemctl restart docker
 To build dependency images:
 
 ```
-./utils/build-deps.sh <tag>
+./utils/build.sh <tag>
 ```
 
 To build main images and containers:
 
 ```
-./utils/create-containers.sh <num_nodes> <tag> <horovod_docker_path> <subnet>
+./utils/create.sh <num_nodes> <num_slots> <tag> <horovod_docker_path> <subnet>
 ```
 
 - `tag` can be `cpu`, `cuda-mpi` or `cuda-nccl`.
@@ -92,24 +92,14 @@ To build main images and containers:
 
 ### Run python scripts
 
-To create a hostfile inside the master node:
-
 ```
-~/horovod-docker/utils/create-hostfile.sh <num_nodes> <slots_per_node>
+horovodrun -np <num_processes> -hostfile ~/horovod-docker/utils/hostfile -p 12345 python train.py
 ```
-
-To run python scripts:
-
-```
-horovodrun -np <num_processes> -hostfile <hostfile> -p 12345 python train.py
-```
-
-`hostfile` is the path to the hostfile just created.
 
 ### Destroy containers
 
 ```
-./utils/destroy-containers.sh <num_nodes>
+./utils/destroy.sh <num_nodes>
 ```
 
 You should destroy and recreate containers every time you want any changes in the Horovod source code to take effect.
