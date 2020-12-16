@@ -6,6 +6,7 @@ ENV TORCHVISION_VERSION=0.8.2+cpu
 ENV MXNET_VERSION=1.5.0
 
 ENV OPENMPI_VERSION=4.0.5
+ENV TZ=Asia/Shanghai
 
 # Python 3.8 is supported by Ubuntu Bionic out of the box
 ARG python=3.8
@@ -13,6 +14,9 @@ ENV PYTHON_VERSION=${python}
 
 # Set default shell to /bin/bash
 SHELL ["/bin/bash", "-cu"]
+
+# Set timezone information for tzdata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
         build-essential \
