@@ -56,7 +56,7 @@ RUN mkdir /tmp/openmpi && \
     wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-${OPENMPI_VERSION}.tar.gz && \
     tar zxf openmpi-${OPENMPI_VERSION}.tar.gz && \
     cd openmpi-${OPENMPI_VERSION} && \
-    ./configure --enable-orterun-prefix-by-default  --enable-debug --&& \
+    ./configure --enable-orterun-prefix-by-default --enable-debug && \
     make -j $(nproc) all && \
     make install && \
     ldconfig && \
